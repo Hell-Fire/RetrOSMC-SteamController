@@ -1,0 +1,13 @@
+[Unit]
+Description = steam controller management watchdog
+
+[Service]
+Type = simple
+TimeoutStopSec = 20
+ExecStart = __INSTALLPATH__/steamcontroller-watchdog.sh
+ExecStopPost = __INSTALLPATH__/steamcontroller-watchdog.sh stop
+Restart = on-abort
+
+[Install]
+WantedBy = multi-user.target
+
