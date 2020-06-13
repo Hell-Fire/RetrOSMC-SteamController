@@ -9,9 +9,19 @@ function reset_controller() {
 		if [[ "$(cat $VENDORFILE)" = "$VENDOR" ]]; then
 			DRIVER=$(realpath "$DEVICES/$device/driver")
 			sudo bash -c "echo $device > $DRIVER/unbind"
-			sleep 5
+			sleep 2
 			sudo bash -c "echo $device > $DRIVER/bind"
-			sleep 5
+			sleep 2
+		fi
+	done
+}
+
+function find_steamlink_shell_pid() {
+	POSSIBLE="$(pgrep shell)"
+	for PID in $POSSIBLE; do
+		if [[ "$(realpath /proc/$PID/exe)" = "/home/osmc/.local/share/SteamLink/bin/shell" ]]; then
+			echo $PID
+			break
 		fi
 	done
 }
@@ -19,7 +29,16 @@ function reset_controller() {
 function cleanup() {
 	echo "Stopping Xbox mode"
 	sc-xbox.py stop
+	sleep 2
 	reset_controller
+	STEAMLINK_SHELL_PID="$(find_steamlink_shell_pid)"
+	if [[ "$STEAMLINK_SHELL_PID" ]]; then
+		# SteamLink shell doesn't always pick up the controller after we've rebound it
+		# Get the steamlink.sh script to do our dirty work restarting it by faking
+		# a command launch.
+		echo "/bin/true" > /home/osmc/.local/share/SteamLink/.tmp/launch_cmdline.txt
+		kill "$STEAMLINK_SHELL_PID"
+	fi
 }
 trap cleanup SIGINT
 
