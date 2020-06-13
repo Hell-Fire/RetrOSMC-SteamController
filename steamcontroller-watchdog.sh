@@ -9,7 +9,9 @@ function reset_controller() {
 		if [[ "$(cat $VENDORFILE)" = "$VENDOR" ]]; then
 			DRIVER=$(realpath "$DEVICES/$device/driver")
 			sudo bash -c "echo $device > $DRIVER/unbind"
+			sleep 5
 			sudo bash -c "echo $device > $DRIVER/bind"
+			sleep 5
 		fi
 	done
 }

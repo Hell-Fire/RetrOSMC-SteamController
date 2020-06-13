@@ -40,6 +40,12 @@ echo "Installing steamcontroller-watchdog service file"
 SERVICEFILE="/lib/systemd/system/steamcontroller-watchdog.service"
 sudo bash -c "sed 's,__INSTALLPATH__,$(pwd),' $(basename "$SERVICEFILE") > $SERVICEFILE"
 
+echo "Reloading service files"
+sudo systemctl daemon-reload
+
+echo "Enabling steamcontroller-watchdog"
+sudo systemctl enable steamcontroller-watchdog
+
 echo "Starting steamcontroller-watchdog"
 sudo systemctl start steamcontroller-watchdog
 
